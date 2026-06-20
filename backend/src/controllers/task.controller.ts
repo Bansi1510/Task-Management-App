@@ -10,19 +10,16 @@ import { getErrorMessage } from "../utils/getErrorMessage";
 
 export const createTask = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const task = await createTaskService(req.body);
-
 
     resHandler(res, 201, {
       success: true,
       message: "Task created successfully",
       data: task,
     });
-
-
   } catch (error: unknown) {
     resHandler(res, 500, {
       success: false,
@@ -31,13 +28,9 @@ export const createTask = async (
   }
 };
 
-export const getTasks = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const getTasks = async (req: Request, res: Response): Promise<void> => {
   try {
     const tasks = await getTasksService();
-
 
     resHandler(res, 200, {
       success: true,
@@ -53,21 +46,16 @@ export const getTasks = async (
 
 export const updateTask = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
-    const task = await updateTaskService(
-      Number(req.params.id),
-      req.body
-    );
+    const task = await updateTaskService(Number(req.params.id), req.body);
 
     resHandler(res, 200, {
       success: true,
       message: "Task updated successfully",
       data: task,
     });
-
-
   } catch (error: unknown) {
     resHandler(res, 500, {
       success: false,
@@ -78,18 +66,15 @@ export const updateTask = async (
 
 export const deleteTask = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     await deleteTaskService(Number(req.params.id));
-
 
     resHandler(res, 200, {
       success: true,
       message: "Task deleted successfully",
     });
-
-
   } catch (error: unknown) {
     resHandler(res, 500, {
       success: false,

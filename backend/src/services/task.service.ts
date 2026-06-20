@@ -1,9 +1,7 @@
 import { sql } from "../config/db";
 import { CreateTaskDTO, Task, UpdateTaskDTO } from "../types/task.types";
 
-export const createTaskService = async (
-  data: CreateTaskDTO
-): Promise<Task> => {
+export const createTaskService = async (data: CreateTaskDTO): Promise<Task> => {
   const { title, description, completed } = data;
 
   const result = await sql`
@@ -25,7 +23,7 @@ export const getTasksService = async (): Promise<Task[]> => {
 
 export const updateTaskService = async (
   id: number,
-  data: UpdateTaskDTO
+  data: UpdateTaskDTO,
 ): Promise<Task> => {
   const existingTask = await sql`
     SELECT *
@@ -52,9 +50,7 @@ export const updateTaskService = async (
   return result[0] as Task;
 };
 
-export const deleteTaskService = async (
-  id: number
-): Promise<void> => {
+export const deleteTaskService = async (id: number): Promise<void> => {
   const existingTask = await sql`
     SELECT *
     FROM tasks
