@@ -1,6 +1,7 @@
 import {
   Button,
   Checkbox,
+  Chip,
   Container,
   Paper,
   Table,
@@ -12,10 +13,10 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 import type { Task } from "../types/task";
-import { getTasks, deleteTask, updateTask } from "../services/taskService";
-import { toast } from "react-toastify";
+import { deleteTask, getTasks, updateTask } from "../services/taskService";
 
 const Home = () => {
   const queryClient = useQueryClient();
@@ -27,12 +28,15 @@ const Home = () => {
 
   const deleteMutation = useMutation({
     mutationFn: deleteTask,
+
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["tasks"],
       });
+
       toast.success("Task deleted successfully");
     },
+
     onError: () => {
       toast.error("Failed to delete task");
     },
@@ -46,6 +50,7 @@ const Home = () => {
       queryClient.invalidateQueries({
         queryKey: ["tasks"],
       });
+
       toast.success("Task updated successfully");
     },
 
@@ -71,88 +76,154 @@ const Home = () => {
 
   if (isLoading) {
     return (
-      <Container className="mt-5">
-        <Typography>Loading...</Typography>
+      <Container sx={{ py: 5 }}>
+        <Typography align="center">
+          Loading tasks...
+        </Typography>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="xl" className="mt-5">
-      <div className="d-flex justify-content-between align-items-center flex-nowrap mb-4">
-        <Typography variant="h4" className="mb-0">
-          Task Management
-        </Typography>
+    <Container
+      maxWidth="lg"
+      sx={{
+        py: 4,
+      }}
+    >
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+          <Typography
+            sx={{
+              fontWeight: 700,
+            }}
+          >
+            Task Management
+          </Typography>
 
-        <Button component={Link} to="/create-task" variant="contained">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+          >
+            Manage your daily tasks efficiently
+          </Typography>
+        </div>
+
+        <Button
+          component={Link}
+          to="/create-task"
+          variant="contained"
+        >
           Add Task
         </Button>
       </div>
 
-      <Paper className="shadow-sm">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Status</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell width={200}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {tasks.length > 0 ? (
-              tasks.map((task) => (
-                <TableRow key={task.id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={task.completed}
-                      onChange={() => handleToggle(task)}
-                    />
-                  </TableCell>
-
-                  <TableCell
-                    style={{
-                      textDecoration: task.completed ? "line-through" : "none",
-                    }}
-                  >
-                    {task.title}
-                  </TableCell>
-
-                  <TableCell>{task.description}</TableCell>
-
-                  <TableCell>
-                    <Button
-                      component={Link}
-                      to={`/edit-task/${task.id}`}
-                      state={{ task }}
-                      variant="outlined"
-                      size="small"
-                      className="me-2"
-                    >
-                      Edit
-                    </Button>
-
-                    <Button
-                      color="error"
-                      variant="contained"
-                      size="small"
-                      onClick={() => handleDelete(task.id)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
+      <Paper
+        elevation={3}
+        sx={{
+          borderRadius: 3,
+          overflow: "hidden",
+        }}
+      >
+        <div className="table-responsive">
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={4} align="center">
-                  No Tasks Found
+                <TableCell>Status</TableCell>
+                <TableCell>Task</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell width={220}>
+                  Actions
                 </TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHead>
+
+            <TableBody>
+              {tasks.length > 0 ? (
+                tasks.map((task) => (
+                  <TableRow key={task.id}>
+                    <TableCell>
+                      <div className="d-flex align-items-center gap-2">
+                        <Checkbox
+                          checked={task.completed}
+                          onChange={() =>
+                            handleToggle(task)
+                          }
+                        />
+
+                        <Chip
+                          label={
+                            task.completed
+                              ? "Completed"
+                              : "Pending"
+                          }
+                          color={
+                            task.completed
+                              ? "success"
+                              : "warning"
+                          }
+                          size="small"
+                        />
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <Typography
+                        sx={{
+                          fontWeight: 600,
+                          textDecoration:
+                            task.completed
+                              ? "line-through"
+                              : "none",
+                        }}
+                      >
+                        {task.title}
+                      </Typography>
+                    </TableCell>
+
+                    <TableCell>
+                      {task.description}
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="d-flex gap-2 flex-wrap">
+                        <Button
+                          component={Link}
+                          to={`/edit-task/${task.id}`}
+                          state={{ task }}
+                          variant="outlined"
+                          size="small"
+                        >
+                          Edit
+                        </Button>
+
+                        <Button
+                          color="error"
+                          variant="contained"
+                          size="small"
+                          onClick={() =>
+                            handleDelete(task.id)
+                          }
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    align="center"
+                  >
+                    No Tasks Found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </Paper>
     </Container>
   );
