@@ -173,7 +173,7 @@ const Home = () => {
               <Button
                 fullWidth
                 component={Link}
-                to={`/ edit - task / ${task.id} `}
+                to={`/edit - task/${task.id}`}
                 state={{ task }}
                 variant="outlined"
               >
