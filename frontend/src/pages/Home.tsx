@@ -1,14 +1,10 @@
+
 import {
   Button,
   Checkbox,
   Chip,
   Container,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Typography,
 } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -76,7 +72,7 @@ const Home = () => {
 
   if (isLoading) {
     return (
-      <Container sx={{ py: 5 }}>
+      <Container maxWidth="md" sx={{ py: 5 }}>
         <Typography align="center">
           Loading tasks...
         </Typography>
@@ -86,19 +82,20 @@ const Home = () => {
 
   return (
     <Container
-      maxWidth="lg"
+      maxWidth="md"
       sx={{
         py: 4,
       }}
     >
-      <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
         <div>
           <Typography
+            variant="h4"
             sx={{
               fontWeight: 700,
             }}
           >
-            Task Management
+            Task Manager
           </Typography>
 
           <Typography
@@ -118,115 +115,99 @@ const Home = () => {
         </Button>
       </div>
 
-      <Paper
-        elevation={3}
-        sx={{
-          borderRadius: 3,
-          overflow: "hidden",
-        }}
-      >
-        <div className="table-responsive">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Status</TableCell>
-                <TableCell>Task</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell width={220}>
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
+      {tasks.length > 0 ? (
+        tasks.map((task) => (
+          <Paper
+            key={task.id}
+            elevation={2}
+            sx={{
+              p: 2,
+              mb: 2,
+              borderRadius: 3,
+            }}
+          >
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                    textDecoration: task.completed
+                      ? "line-through"
+                      : "none",
+                  }}
+                >
+                  {task.title}
+                </Typography>
 
-            <TableBody>
-              {tasks.length > 0 ? (
-                tasks.map((task) => (
-                  <TableRow key={task.id}>
-                    <TableCell>
-                      <div className="d-flex align-items-center gap-2">
-                        <Checkbox
-                          checked={task.completed}
-                          onChange={() =>
-                            handleToggle(task)
-                          }
-                        />
+                <Chip
+                  label={
+                    task.completed
+                      ? "Completed"
+                      : "Pending"
+                  }
+                  color={
+                    task.completed
+                      ? "success"
+                      : "warning"
+                  }
+                  size="small"
+                  sx={{ mt: 1 }}
+                />
+              </div>
 
-                        <Chip
-                          label={
-                            task.completed
-                              ? "Completed"
-                              : "Pending"
-                          }
-                          color={
-                            task.completed
-                              ? "success"
-                              : "warning"
-                          }
-                          size="small"
-                        />
-                      </div>
-                    </TableCell>
+              <Checkbox
+                checked={task.completed}
+                onChange={() => handleToggle(task)}
+              />
+            </div>
 
-                    <TableCell>
-                      <Typography
-                        sx={{
-                          fontWeight: 600,
-                          textDecoration:
-                            task.completed
-                              ? "line-through"
-                              : "none",
-                        }}
-                      >
-                        {task.title}
-                      </Typography>
-                    </TableCell>
+            <Typography
+              color="text.secondary"
+              sx={{ mt: 2 }}
+            >
+              {task.description}
+            </Typography>
 
-                    <TableCell>
-                      {task.description}
-                    </TableCell>
+            <div className="d-flex gap-2 mt-3">
+              <Button
+                fullWidth
+                component={Link}
+                to={`/ edit - task / ${task.id} `}
+                state={{ task }}
+                variant="outlined"
+              >
+                Edit
+              </Button>
 
-                    <TableCell>
-                      <div className="d-flex gap-2 flex-wrap">
-                        <Button
-                          component={Link}
-                          to={`/edit-task/${task.id}`}
-                          state={{ task }}
-                          variant="outlined"
-                          size="small"
-                        >
-                          Edit
-                        </Button>
-
-                        <Button
-                          color="error"
-                          variant="contained"
-                          size="small"
-                          onClick={() =>
-                            handleDelete(task.id)
-                          }
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    align="center"
-                  >
-                    No Tasks Found
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </Paper>
+              <Button
+                fullWidth
+                color="error"
+                variant="contained"
+                onClick={() => handleDelete(task.id)}
+              >
+                Delete
+              </Button>
+            </div>
+          </Paper>
+        ))
+      ) : (
+        <Paper
+          elevation={2}
+          sx={{
+            p: 4,
+            textAlign: "center",
+            borderRadius: 3,
+          }}
+        >
+          <Typography color="text.secondary">
+            No Tasks Found
+          </Typography>
+        </Paper>
+      )}
     </Container>
   );
 };
 
 export default Home;
+
